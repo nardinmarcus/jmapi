@@ -9,7 +9,7 @@ description: Operate a local Jimeng or Dreamina API gateway for image and video 
 
 Use this skill to work with the local `jmapi` service. The service wraps Jimeng or Dreamina browser-session APIs and exposes OpenAI-compatible endpoints for image and video generation.
 
-Assume the API base URL is `http://localhost:5100` unless the user provides another URL.
+Assume the API base URL is `https://jmapi.namooca.com` unless the user provides another URL.
 
 ## Safety Rules
 
@@ -37,7 +37,7 @@ cp namoo-jmapi/.env.example namoo-jmapi/.env.local
 Expected variables:
 
 ```bash
-JMAPI_BASE_URL=http://localhost:5100
+JMAPI_BASE_URL=https://jmapi.namooca.com
 JMAPI_KEY=replace_with_gateway_key
 JIMENG_SESSION_ID=token1,token2
 ```
@@ -82,13 +82,14 @@ The service performs credit-aware token selection for image and video generation
 Check service liveness:
 
 ```bash
-curl -sS http://localhost:5100/ping
+curl -sS "$JMAPI_BASE_URL/ping"
 ```
 
 Check account validity:
 
 ```bash
-curl -sS -X POST http://localhost:5100/token/check \
+curl -sS -X POST "$JMAPI_BASE_URL/token/check" \
+  -H "X-JMAPI-Key: $JMAPI_KEY" \
   -H "Content-Type: application/json" \
   -d '{"token":"TOKEN"}'
 ```
@@ -96,14 +97,16 @@ curl -sS -X POST http://localhost:5100/token/check \
 Check credits for one or more tokens:
 
 ```bash
-curl -sS -X POST http://localhost:5100/token/points \
+curl -sS -X POST "$JMAPI_BASE_URL/token/points" \
+  -H "X-JMAPI-Key: $JMAPI_KEY" \
   -H "Authorization: Bearer token1,token2"
 ```
 
 Claim daily credits for one or more tokens:
 
 ```bash
-curl -sS -X POST http://localhost:5100/token/receive \
+curl -sS -X POST "$JMAPI_BASE_URL/token/receive" \
+  -H "X-JMAPI-Key: $JMAPI_KEY" \
   -H "Authorization: Bearer token1,token2"
 ```
 
@@ -172,7 +175,8 @@ For protected remote deployments, include the gateway key from the local environ
 Text-to-image:
 
 ```bash
-curl -sS -X POST http://localhost:5100/v1/images/generations \
+curl -sS -X POST "$JMAPI_BASE_URL/v1/images/generations" \
+  -H "X-JMAPI-Key: $JMAPI_KEY" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $JIMENG_SESSION_ID" \
   -d '{"model":"jimeng-4.5","prompt":"a precise visual prompt"}'
@@ -181,7 +185,8 @@ curl -sS -X POST http://localhost:5100/v1/images/generations \
 Image composition:
 
 ```bash
-curl -sS -X POST http://localhost:5100/v1/images/compositions \
+curl -sS -X POST "$JMAPI_BASE_URL/v1/images/compositions" \
+  -H "X-JMAPI-Key: $JMAPI_KEY" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $JIMENG_SESSION_ID" \
   -d '{"model":"jimeng-4.5","prompt":"combine these references","images":["https://example.com/input.png"]}'
@@ -190,7 +195,8 @@ curl -sS -X POST http://localhost:5100/v1/images/compositions \
 Video generation:
 
 ```bash
-curl -sS -X POST http://localhost:5100/v1/videos/generations \
+curl -sS -X POST "$JMAPI_BASE_URL/v1/videos/generations" \
+  -H "X-JMAPI-Key: $JMAPI_KEY" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $JIMENG_SESSION_ID" \
   -d '{"model":"jimeng-video-seedance-2.0-fast","prompt":"a short cinematic motion shot","ratio":"16:9","duration":5}'
