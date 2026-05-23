@@ -157,6 +157,20 @@ docker exec -it jimeng-api sh
 - ✅ **Unified port**: Uses port 5100 both inside and outside the container
 - ✅ **Log management**: Structured log output
 
+#### VPS Production Deployment
+
+For public VPS deployments, use a reverse proxy as the public entrypoint and avoid exposing port `5100` directly. This repository includes a VPS-oriented deployment template:
+
+```text
+deploy/vps/
+```
+
+The template includes:
+- Docker Compose bound to `127.0.0.1:5100`
+- `prod` environment configuration
+- Nginx HTTPS reverse proxy example
+- Long polling timeout, token-level proxy, and security notes
+
 ### Configuration
 
 #### `configs/dev/service.yml`

@@ -159,6 +159,20 @@ docker exec -it jimeng-api sh
 - ✅ **统一端口**：容器内外均使用5100端口
 - ✅ **日志管理**：结构化日志输出
 
+#### VPS 生产化部署
+
+如果需要部署到公网 VPS，建议使用反向代理收敛入口，不要直接暴露 `5100` 端口。仓库内提供了面向 VPS 的部署模板：
+
+```text
+deploy/vps/
+```
+
+该模板包含：
+- 仅绑定 `127.0.0.1:5100` 的 Docker Compose 配置
+- `prod` 环境配置
+- Nginx HTTPS 反代示例
+- 长轮询超时、token 级代理、安全边界说明
+
 ### 配置说明
 
 #### `configs/dev/service.yml`
