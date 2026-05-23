@@ -184,9 +184,11 @@ The service is best suited for personal, low-frequency use. It depends on unoffi
 For private use, add at least one of these controls at the reverse proxy layer:
 
 - IP allowlist.
-- Basic Auth.
+- Custom gateway header such as `X-JMAPI-Key`.
 - VPN-only access.
 - Firewall rule that blocks public access to port `5100`.
+
+Avoid Basic Auth for this service's API endpoints. Basic Auth uses the standard `Authorization` header, but the application also needs `Authorization: Bearer <sessionid>` for Jimeng/Dreamina tokens. A custom header keeps the gateway secret separate from the upstream session token.
 
 Avoid enabling `debug: true` in production because request and upstream payload logs can become too verbose.
 
