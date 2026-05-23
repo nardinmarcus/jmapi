@@ -4,7 +4,7 @@ import _ from "lodash";
 import Request from "@/lib/request/Request.ts";
 import { generateImages, generateImageComposition } from "@/api/controllers/images.ts";
 import { DEFAULT_IMAGE_MODEL } from "@/api/consts/common.ts";
-import { tokenSplit } from "@/api/controllers/core.ts";
+import { selectAvailableToken, tokenSplit } from "@/api/controllers/core.ts";
 import util from "@/lib/util.ts";
 
 export default {
@@ -32,7 +32,7 @@ export default {
         .validate("headers.authorization", _.isString);
 
       const tokens = tokenSplit(request.headers.authorization);
-      const token = _.sample(tokens);
+      const token = await selectAvailableToken(tokens);
       const {
         model,
         prompt,
@@ -140,7 +140,7 @@ export default {
       }
 
       const tokens = tokenSplit(request.headers.authorization);
-      const token = _.sample(tokens);
+      const token = await selectAvailableToken(tokens);
 
       const {
         model,

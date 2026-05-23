@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import Request from '@/lib/request/Request.ts';
 import Response from '@/lib/response/Response.ts';
-import { tokenSplit } from '@/api/controllers/core.ts';
+import { selectAvailableToken, tokenSplit } from '@/api/controllers/core.ts';
 import { generateVideo, DEFAULT_MODEL } from '@/api/controllers/videos.ts';
 import util from '@/lib/util.ts';
 
@@ -136,10 +136,9 @@ export default {
                 }
             }
 
-            // refresh_token切分
+            // Split refresh tokens from the Authorization header.
             const tokens = tokenSplit(request.headers.authorization);
-            // 随机挑选一个refresh_token
-            const token = _.sample(tokens);
+            const token = await selectAvailableToken(tokens);
 
             const {
                 model = DEFAULT_MODEL,

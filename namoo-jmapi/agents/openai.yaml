@@ -1,0 +1,4 @@
+interface:
+  display_name: "Namoo JMAPI"
+  short_description: "Generate media with Namoo JMAPI locally"
+  default_prompt: "Use $namoo-jmapi to generate an image with my local jmapi service."

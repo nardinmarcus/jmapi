@@ -646,7 +646,44 @@ export function checkResult(result: AxiosResponse) {
  * @param authorization 认证字符串
  */
 export function tokenSplit(authorization: string) {
-  return authorization.replace("Bearer ", "").split(",");
+  return authorization
+    .replace("Bearer ", "")
+    .split(",")
+    .map(token => token.trim())
+    .filter(Boolean);
+}
+
+export async function selectAvailableToken(tokens: string[]) {
+  const failures: string[] = [];
+
+  for (const token of tokens) {
+    try {
+      const currentCredit = await getCredit(token);
+      if (currentCredit.totalCredit > 0) {
+        return token;
+      }
+
+      logger.info("Token has no credit, attempting daily credit receive...");
+      await receiveCredit(token);
+
+      const updatedCredit = await getCredit(token);
+      if (updatedCredit.totalCredit > 0) {
+        return token;
+      }
+
+      failures.push("insufficient credit after receive");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      logger.warn(`Token selection skipped one token: ${message}`);
+      failures.push(message);
+    }
+  }
+
+  const detail = failures.length > 0 ? `: ${failures.join("; ")}` : "";
+  throw new APIException(
+    EX.API_REQUEST_FAILED,
+    `All provided tokens are unavailable or have insufficient credit${detail}`
+  );
 }
 
 /**
