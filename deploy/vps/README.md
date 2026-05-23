@@ -2,6 +2,8 @@
 
 This directory contains a production-oriented VPS deployment template for `nardinmarcus/jmapi`.
 
+For day-to-day curl examples and operational commands, see `USAGE.md`.
+
 ## Recommended Topology
 
 ```text
